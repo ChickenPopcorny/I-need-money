@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>记一笔</title>
+    <link rel="stylesheet" href="https://cdn.bootcss.com/twitter-bootstrap/4.3.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/styles/reset.css">
+</head>
+<body>
+    <div class="container mt-3" id="app">
+        <div class="form-group">
+            <label class="mr-2" for="budgetType">预算分类</label>
+            <select class="form-control" id="budgetType" v-model.number="details.budgetType">
+                <option value="0">本日余额</option>
+                <option value="1">按揭还款</option>
+                <option value="2">房租水电</option>
+                <option value="3">话费网费</option>
+                <option value="4">固定存款</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label class="mr-2" for="money">金额</label>
+            <input type="number" class="form-control" id="money" v-model.number="details.money">
+        </div>
+
+        <div class="form-group">
+            <label class="mr-2" for="date">日期</label>
+            <input type="date" class="form-control" id="date" v-model="details.date">
+        </div>
+
+        <div class="form-group">
+            <label class="mr-2" for="note">备注</label>
+            <input type="text" class="form-control" id="note" v-model="details.note">
+        </div>
+        
+        <div class="form-group">
+            <button class="btn btn-primary btn-block" @click="editDetails">添加</button>
+        </div>
+    </div>
+
+    <script src="https://cdn.bootcss.com/moment.js/2.24.0/moment.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script src="https://cdn.bootcss.com/axios/0.19.0/axios.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/eruda"></script>
+    <script>
+        var vue = new Vue({
+            el: '#app',
+            data: {
+                budgets: {},
+                details: {
+                    budgetType: 0,
+                    money: '',
+                    date: moment().format('YYYY-MM-DD'),
+                    note: ''
+                }
+            },
+            methods: {
+                async getBudgets() {
+                    result = await axios.get('http://192.168.50.205/budgets')
+                    this.budgets = result.data
+                },
+                async editDetails() {
+                    let that = this
+                    // 如果 money 未填写，则设置为 0
+                    this.details.money = (this.details.money == '') ? 0 : this.details.money
+                    
+                    let res = await axios.post('http://192.168.50.205/details', that.details)
+                    if (res.data.status == 0) {
+                        this.editBudgets()
+                        location.assign('/index.html')
+                    }
+                },
+                async editBudgets() {
+                    let that = this
+                    switch (this.details.budgetType) {
+                        case 0: this.budgets.today -= this.details.money; break;
+                        case 1: this.budgets.repayment -= this.details.money; break;
+                        case 2: this.budgets.house -= this.details.money; break;
+                        case 3: this.budgets.phone -= this.details.money; break;
+                        case 4: this.budgets.deposit -= this.details.money; break;
+                    }
+                    await axios.post('http://192.168.50.205/budgets', that.budgets)
+                },
+            },
+            created() {
+                this.getBudgets()
+            }
+        })
+    
+    </script>
+</body>
+</html>

@@ -1,4 +1,4 @@
-# 0002 MyMoney
+# MyMoney
 
 这是个人的记账小项目。
 

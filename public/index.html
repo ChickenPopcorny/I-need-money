@@ -19,6 +19,25 @@
                 width: 100%; 
             }
         }
+
+        .v-enter-active, 
+        .v-leave-active { 
+            transition: .6s; 
+        }
+
+        .v-enter, 
+        .v-leave-to {
+            opacity: 0;
+            transform: translateX(30px);
+        }
+
+        .v-move {
+            transition: 1s;
+        }
+
+        .v-leave-active {
+            position: absolute;
+        }
     </style>
 </head>
 <body>
@@ -59,26 +78,24 @@
             <a href="/detail.html" class="btn btn-primary" style="width: 45%;">记一笔</a>
         </div>
 
-        <div class="table-responsive mt-4">
-            <table class="table">
-                <thead class="thead-dark">
-                    <tr>
-                        <th class="text-center">操作</th>
-                        <th class="text-center">日期</th>
-                        <th class="text-center">金额</th>
-                        <th>备注</th>
-                    </tr>
-                </thead>
-                <tbody style="font-size: 14px;">
-                    <tr v-for="(detail, i) in details" :key="detail._id">
-                        <td class="text-nowrap text-center"><button class="btn btn-danger btn-sm" @click="deleteDetails(detail._id, i)">删除</button></td>
-                        <td class="text-nowrap text-center">{{ detail.date }}</td>
-                        <td class="text-nowrap text-center">{{ detail.money.toFixed(2) }}</td>
-                        <td class="text-left text-nowrap">{{ detail.note }}</td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
+        <table class="table mt-4">
+            <thead class="thead-dark">
+                <tr>
+                    <th class="text-center">操作</th>
+                    <th class="text-center">日期</th>
+                    <th class="text-center">金额</th>
+                    <th>备注</th>
+                </tr>
+            </thead>
+            <tbody style="font-size: 14px;" is="transition-group">
+                <tr v-for="(detail, i) in details" :key="detail._id">
+                    <td class="text-nowrap text-center" width="50"><button class="btn btn-danger btn-sm" @click="deleteDetails(detail._id, i)">删除</button></td>
+                    <td class="text-nowrap text-center" width="50">{{ detail.date }}</td>
+                    <td class="text-nowrap text-center" width="70">{{ detail.money.toFixed(2) }}</td>
+                    <td class="text-left text-nowrap">{{ detail.note }}</td>
+                </tr>
+            </tbody>
+        </table>
 
         <ul class="pagination justify-content-center">
             <li class="page-item" :class="curPage <= 1 ? 'disabled' : ''"><a class="page-link" @click="getDetails(curPage - 1)" href="javascript:;">&laquo;</a></li>

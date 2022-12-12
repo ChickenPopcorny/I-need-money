@@ -5,7 +5,7 @@
   "main": "app.js",
   "dependencies": {
     "babel-polyfill": "^6.26.0",
-    "express": "^4.17.1",
+    "express": "^4.17.3",
     "express-formidable": "^1.2.0",
     "mongoose": "^5.7.13"
   },
